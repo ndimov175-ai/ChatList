@@ -92,12 +92,9 @@ class MarkdownViewerDialog(QDialog):
         layout.addWidget(self.text_edit)
         
         # Buttons
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok |
-            QDialogButtonBox.StandardButton.Copy
-        )
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         buttons.accepted.connect(self.accept)
-        copy_btn = buttons.button(QDialogButtonBox.StandardButton.Copy)
+        copy_btn = buttons.addButton("Copy", QDialogButtonBox.ButtonRole.ActionRole)
         copy_btn.clicked.connect(self.copy_to_clipboard)
         layout.addWidget(buttons)
     

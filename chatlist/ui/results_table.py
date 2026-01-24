@@ -56,12 +56,10 @@ class ResultDetailDialog(QDialog):
             layout.addWidget(error_label)
 
         # Buttons
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok |
-            QDialogButtonBox.StandardButton.Copy
-        )
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         buttons.accepted.connect(self.accept)
-        buttons.button(QDialogButtonBox.StandardButton.Copy).clicked.connect(
+        copy_btn = buttons.addButton("Copy", QDialogButtonBox.ButtonRole.ActionRole)
+        copy_btn.clicked.connect(
             lambda: self.copy_to_clipboard(text_edit.toPlainText())
         )
         layout.addWidget(buttons)
