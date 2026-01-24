@@ -76,15 +76,15 @@ class ClientFactory:
                     model_name=model_name,
                     **kwargs
                 )
-            elif 'googleapis.com' in api_url_lower or 'gemini' in model_name_lower:
-                return GoogleClient(
+            elif 'openrouter.ai' in api_url_lower or 'openrouter' in model_name_lower:
+                return OpenRouterClient(
                     api_url=api_url,
                     api_key=api_key,
                     model_name=model_name,
                     **kwargs
                 )
-            elif 'openrouter.ai' in api_url_lower or 'openrouter' in model_name_lower:
-                return OpenRouterClient(
+            elif 'googleapis.com' in api_url_lower or 'gemini' in model_name_lower:
+                return GoogleClient(
                     api_url=api_url,
                     api_key=api_key,
                     model_name=model_name,
