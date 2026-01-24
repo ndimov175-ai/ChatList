@@ -69,15 +69,15 @@ class ClientFactory:
                     model_name=model_name,
                     **kwargs
                 )
-            elif 'anthropic.com' in api_url_lower or 'claude' in model_name_lower:
-                return AnthropicClient(
+            elif 'openrouter.ai' in api_url_lower or 'openrouter' in model_name_lower:
+                return OpenRouterClient(
                     api_url=api_url,
                     api_key=api_key,
                     model_name=model_name,
                     **kwargs
                 )
-            elif 'openrouter.ai' in api_url_lower or 'openrouter' in model_name_lower:
-                return OpenRouterClient(
+            elif 'anthropic.com' in api_url_lower or 'claude' in model_name_lower:
+                return AnthropicClient(
                     api_url=api_url,
                     api_key=api_key,
                     model_name=model_name,
