@@ -280,21 +280,21 @@ class ResultManager:
     def _row_to_dict_with_model(row) -> Dict[str, Any]:
         """Convert database row to dictionary with model name."""
         result = ResultManager._row_to_dict(row)
-        result['model_name'] = row.get('model_name', '')
+        result['model_name'] = row['model_name'] if 'model_name' in row.keys() else ''
         return result
 
     @staticmethod
     def _row_to_dict_with_prompt(row) -> Dict[str, Any]:
         """Convert database row to dictionary with prompt text."""
         result = ResultManager._row_to_dict(row)
-        result['prompt_text'] = row.get('prompt_text', '')
+        result['prompt_text'] = row['prompt_text'] if 'prompt_text' in row.keys() else ''
         return result
 
     @staticmethod
     def _row_to_dict_full(row) -> Dict[str, Any]:
         """Convert database row to dictionary with all related data."""
         result = ResultManager._row_to_dict(row)
-        result['model_name'] = row.get('model_name', '')
-        result['prompt_text'] = row.get('prompt_text', '')
+        result['model_name'] = row['model_name'] if 'model_name' in row.keys() else ''
+        result['prompt_text'] = row['prompt_text'] if 'prompt_text' in row.keys() else ''
         return result
 

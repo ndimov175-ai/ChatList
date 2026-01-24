@@ -176,6 +176,11 @@ class MainWindow(QMainWindow):
         clear_action.triggered.connect(self.results_table.clear_results)
         toolbar.addAction(clear_action)
 
+        # Results action
+        results_action = QAction("Results", self)
+        results_action.triggered.connect(self.on_show_saved_results)
+        toolbar.addAction(results_action)
+
     def init_statusbar(self):
         """Initialize status bar."""
         self.statusBar().showMessage("Ready")
@@ -200,6 +205,12 @@ class MainWindow(QMainWindow):
         dialog.exec()
         # Refresh model selector after changes
         self.model_selector.load_models()
+
+    def on_show_saved_results(self):
+        """Handle Results action - show saved results dialog."""
+        from chatlist.ui.saved_results_dialog import SavedResultsDialog
+        dialog = SavedResultsDialog(self)
+        dialog.exec()
 
     def on_about(self):
         """Handle About action."""
