@@ -1,0 +1,21 @@
+# Core dependencies
+PyQt6>=6.5.0
+PyQt6-Qt6>=6.5.0
+requests>=2.31.0
+httpx>=0.24.0
+python-dotenv>=1.0.0
+
+# Database
+# sqlite3 is included in Python standard library
+
+# Development dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Logging
+colorama>=0.4.6
+
+# Optional: for async operations
+aiofiles>=23.0.0

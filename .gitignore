@@ -61,6 +61,13 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# ChatList specific
+chatlist.db
+chatlist.db-journal
+*.db
+*.db-journal
+logs/
+
 # Flask stuff:
 instance/
 .webassets-cache
