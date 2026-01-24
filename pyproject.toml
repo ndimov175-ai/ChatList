@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chatlist"
+version = "0.1.0"
+description = "AI Model Comparison Tool - Compare responses from multiple AI models simultaneously"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "ChatList Contributors"}
+]
+keywords = ["ai", "llm", "chatgpt", "claude", "gemini", "comparison", "gui"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "PyQt6>=6.5.0",
+    "PyQt6-Qt6>=6.5.0",
+    "requests>=2.31.0",
+    "httpx>=0.24.0",
+    "python-dotenv>=1.0.0",
+    "aiofiles>=23.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "colorama>=0.4.6",
+]
+
+[project.scripts]
+chatlist = "chatlist.app:main"
+
+[project.urls]
+Homepage = "https://github.com/niki-sudo/ChatList"
+Repository = "https://github.com/niki-sudo/ChatList"
+Issues = "https://github.com/niki-sudo/ChatList/issues"
+
+[tool.setuptools]
+packages = ["chatlist"]
+
+[tool.setuptools.package-data]
+chatlist = ["migrations/*.sql"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+

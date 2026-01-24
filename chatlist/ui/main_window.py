@@ -6,7 +6,7 @@ import asyncio
 from typing import List, Optional
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QMenuBar,
-    QToolBar, QStatusBar, QMessageBox, QSplitter
+    QToolBar, QStatusBar, QMessageBox, QSplitter, QProgressBar, QLabel
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QAction, QIcon
@@ -80,6 +80,13 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout(central_widget)
         main_layout.setContentsMargins(5, 5, 5, 5)
         main_layout.setSpacing(5)
+
+        # Progress bar (initially hidden)
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMinimum(0)
+        self.progress_bar.setMaximum(0)  # Indeterminate mode
+        self.progress_bar.setVisible(False)
+        main_layout.addWidget(self.progress_bar)
 
         # Create splitter for resizable panels
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -234,6 +241,10 @@ class MainWindow(QMainWindow):
         self.model_selector.setEnabled(False)
         self.send_action.setEnabled(False)
         self.cancel_action.setEnabled(True)
+        
+        # Show progress bar
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setMaximum(0)  # Indeterminate mode
 
         # Create and start worker thread
         self.request_worker = RequestWorker(
@@ -256,6 +267,9 @@ class MainWindow(QMainWindow):
         self.model_selector.setEnabled(True)
         self.send_action.setEnabled(True)
         self.cancel_action.setEnabled(False)
+        
+        # Hide progress bar
+        self.progress_bar.setVisible(False)
 
         # Display results
         self.results_table.display_results(results)
@@ -287,6 +301,7 @@ class MainWindow(QMainWindow):
         self.model_selector.setEnabled(True)
         self.send_action.setEnabled(True)
         self.cancel_action.setEnabled(False)
+        self.progress_bar.setVisible(False)
         self.statusBar().showMessage("Request cancelled")
 
     def on_save_prompt(self, prompt_text: str, tags: List[str]):

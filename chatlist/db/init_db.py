@@ -43,6 +43,63 @@ def initialize_database():
             'api_key_var': 'GOOGLE_API_KEY',
             'is_active': config.is_api_key_set('google')
         },
+        # OpenRouter models (unified API for multiple providers)
+        # Using correct model identifiers from OpenRouter
+        # Note: Model names must match exactly as listed on openrouter.ai/models
+        # Models are sorted by popularity and availability
+        
+        # Popular free models (require credits but are free to use)
+        # These models are verified to exist in OpenRouter
+        {
+            'name': 'meta-llama/llama-3.2-3b-instruct:free',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        {
+            'name': 'mistralai/mistral-small-3.1-24b-instruct:free',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        {
+            'name': 'nvidia/nemotron-nano-9b-v2:free',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        {
+            'name': 'qwen/qwen3-next-80b-a3b-instruct:free',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        
+        # Popular paid models (affordable)
+        {
+            'name': 'openai/gpt-3.5-turbo',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        {
+            'name': 'openai/gpt-4o-mini',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        {
+            'name': 'anthropic/claude-3.5-haiku',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
+        {
+            'name': 'google/gemini-2.0-flash-001',
+            'api_url': 'https://openrouter.ai/api/v1/chat/completions',
+            'api_key_var': 'OPENROUTER_API_KEY',
+            'is_active': config.is_api_key_set('openrouter')
+        },
     ]
 
     for model_data in default_models:

@@ -24,6 +24,7 @@ class Config:
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         self.anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
         self.google_api_key = os.getenv('GOOGLE_API_KEY')
+        self.openrouter_api_key = os.getenv('OPENROUTER_API_KEY')
 
         # Application settings
         self.log_level = os.getenv('LOG_LEVEL', 'INFO')
@@ -70,6 +71,7 @@ class Config:
             'openai': self.openai_api_key,
             'anthropic': self.anthropic_api_key,
             'google': self.google_api_key,
+            'openrouter': self.openrouter_api_key,
         }
         return key_map.get(provider.lower())
 
@@ -95,6 +97,7 @@ class Config:
                 'openai': bool(self.openai_api_key),
                 'anthropic': bool(self.anthropic_api_key),
                 'google': bool(self.google_api_key),
+                'openrouter': bool(self.openrouter_api_key),
             }
         }
 

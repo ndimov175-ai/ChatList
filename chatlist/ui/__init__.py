@@ -11,6 +11,7 @@ from chatlist.ui.results_table import ResultsTableWidget
 from chatlist.ui.result_comparison import ResultComparisonWidget
 from chatlist.ui.settings_dialog import SettingsDialog
 from chatlist.ui.model_dialog import ModelManagementDialog, ModelEditDialog
+from chatlist.ui.markdown_viewer import MarkdownViewerDialog
 
 __all__ = [
     'MainWindow',
@@ -21,4 +22,5 @@ __all__ = [
     'SettingsDialog',
     'ModelManagementDialog',
     'ModelEditDialog',
+    'MarkdownViewerDialog',
 ]

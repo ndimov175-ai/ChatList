@@ -12,6 +12,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor
 
 from chatlist.core.request_processor import RequestResult
+from chatlist.ui.markdown_viewer import MarkdownViewerDialog
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +105,7 @@ class ResultsTableWidget(QWidget):
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setAlternatingRowColors(True)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.table.setWordWrap(True)  # Enable word wrap for table cells
         self.table.cellDoubleClicked.connect(self.on_cell_double_clicked)
         layout.addWidget(self.table)
 
@@ -114,6 +116,11 @@ class ResultsTableWidget(QWidget):
         self.view_btn.clicked.connect(self.on_view_details)
         self.view_btn.setEnabled(False)
         buttons_layout.addWidget(self.view_btn)
+
+        self.open_btn = QPushButton("Open")
+        self.open_btn.clicked.connect(self.on_open_markdown)
+        self.open_btn.setEnabled(False)
+        buttons_layout.addWidget(self.open_btn)
 
         self.save_btn = QPushButton("Save Selected")
         self.save_btn.clicked.connect(self.on_save_selected)
@@ -141,17 +148,30 @@ class ResultsTableWidget(QWidget):
             model_item = QTableWidgetItem(result.model_name)
             self.table.setItem(row, 0, model_item)
 
-            # Response text (truncated)
+            # Response text (multi-line)
             response_text = result.response.text
             if result.response.error:
                 response_text = f"Error: {result.response.error}"
                 model_item.setForeground(QColor(200, 0, 0))  # Red for errors
             else:
-                # Truncate long responses
-                if len(response_text) > 100:
-                    response_text = response_text[:100] + "..."
+                # Show more text (up to 500 chars, but allow multi-line)
+                if len(response_text) > 500:
+                    response_text = response_text[:500] + "..."
+            
+            # Create item with word wrap enabled
             response_item = QTableWidgetItem(response_text)
+            response_item.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+            # Enable word wrap for the item
+            response_item.setFlags(response_item.flags() | Qt.ItemFlag.ItemIsEditable)
+            response_item.setFlags(response_item.flags() & ~Qt.ItemFlag.ItemIsEditable)  # Keep read-only but allow wrap
             self.table.setItem(row, 1, response_item)
+            
+            # Set row height to accommodate multiple lines
+            # Calculate height based on text length and line breaks
+            line_count = max(1, response_text.count('\n') + 1)
+            # Estimate: ~20px per line, minimum 60px, max 200px for very long responses
+            estimated_height = min(max(60, line_count * 20 + 20), 200)
+            self.table.setRowHeight(row, estimated_height)
 
             # Response time
             time_text = f"{result.response.response_time:.2f}" if result.response.response_time else "N/A"
@@ -177,13 +197,17 @@ class ResultsTableWidget(QWidget):
                     if item:
                         item.setBackground(QColor(255, 240, 240))  # Light red
 
-        # Resize rows to content
-        self.table.resizeRowsToContents()
+        # Ensure minimum row heights are maintained
+        for row in range(self.table.rowCount()):
+            current_height = self.table.rowHeight(row)
+            if current_height < 60:
+                self.table.setRowHeight(row, 60)
 
     def on_selection_changed(self):
         """Handle table selection changes."""
         has_selection = len(self.table.selectedIndexes()) > 0
         self.view_btn.setEnabled(has_selection)
+        self.open_btn.setEnabled(has_selection)
         self.save_btn.setEnabled(has_selection)
 
     def on_cell_double_clicked(self, row: int, column: int):
@@ -197,6 +221,31 @@ class ResultsTableWidget(QWidget):
         if selected_rows:
             row = next(iter(selected_rows))
             self.show_result_details(row)
+
+    def on_open_markdown(self):
+        """Open selected result in markdown viewer."""
+        selected_rows = set(index.row() for index in self.table.selectedIndexes())
+        if not selected_rows:
+            return
+        
+        row = next(iter(selected_rows))
+        if row >= len(self.results):
+            return
+        
+        result = self.results[row]
+        if not result.success or result.response.error:
+            return
+        
+        # Get response text
+        markdown_text = result.response.text
+        
+        # Create and show markdown viewer dialog
+        dialog = MarkdownViewerDialog(
+            f"Response: {result.model_name}",
+            markdown_text,
+            self
+        )
+        dialog.exec()
 
     def show_result_details(self, row: int):
         """Show detailed view of a result."""
@@ -248,5 +297,6 @@ class ResultsTableWidget(QWidget):
         self.results.clear()
         self.table.setRowCount(0)
         self.view_btn.setEnabled(False)
+        self.open_btn.setEnabled(False)
         self.save_btn.setEnabled(False)
 

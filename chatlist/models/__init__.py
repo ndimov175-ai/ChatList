@@ -8,6 +8,7 @@ from chatlist.models.base_client import BaseAPIClient, APIResponse
 from chatlist.models.openai_client import OpenAIClient
 from chatlist.models.anthropic_client import AnthropicClient
 from chatlist.models.google_client import GoogleClient
+from chatlist.models.openrouter_client import OpenRouterClient
 from chatlist.models.client_factory import ClientFactory
 
 __all__ = [
@@ -16,5 +17,6 @@ __all__ = [
     'OpenAIClient',
     'AnthropicClient',
     'GoogleClient',
+    'OpenRouterClient',
     'ClientFactory',
 ]

@@ -7,7 +7,7 @@ AI Model Comparison Tool - Compare responses from multiple AI models simultaneou
 - Send the same prompt to multiple AI models at once
 - Compare responses side-by-side in a table
 - Save prompts and results to database
-- Support for OpenAI GPT, Anthropic Claude, and Google Gemini
+- Support for OpenAI GPT, Anthropic Claude, Google Gemini, and OpenRouter (unified API)
 - Async concurrent requests for fast responses
 
 ## Installation
@@ -29,6 +29,7 @@ pip install -r requirements.txt
 OPENAI_API_KEY=your_openai_api_key_here
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
 GOOGLE_API_KEY=your_google_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 
 # Optional settings
 DATABASE_PATH=chatlist.db
@@ -57,11 +58,11 @@ python -m chatlist.app
 
 - ✅ Stage 1: Project setup and configuration
 - ✅ Stage 2: Database implementation
-- ✅ Stage 3: API clients for neural networks
+- ✅ Stage 3: API clients for neural networks (including OpenRouter)
 - ✅ Stage 4: Graphical interface (PyQt6)
-- ⏳ Stage 5: Integration and testing
+- ✅ Stage 5: Integration and testing
 - ⏳ Stage 6: Testing and refinement
-- ⏳ Stage 7: Finalization and deployment
+- ✅ Stage 7: Finalization (pyproject.toml, progress bar, .env.example)
 
 ## License
 

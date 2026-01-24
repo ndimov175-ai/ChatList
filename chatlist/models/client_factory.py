@@ -8,6 +8,7 @@ from chatlist.models.base_client import BaseAPIClient
 from chatlist.models.openai_client import OpenAIClient
 from chatlist.models.anthropic_client import AnthropicClient
 from chatlist.models.google_client import GoogleClient
+from chatlist.models.openrouter_client import OpenRouterClient
 from chatlist.config.settings import config
 
 logger = logging.getLogger(__name__)
@@ -36,11 +37,25 @@ class ClientFactory:
             API client instance or None if creation fails
         """
         # Get API key from config
-        api_key = config.get_api_key(api_key_var.lower().replace('_api_key', ''))
+        # Extract provider name from api_key_var
+        # Examples: "OPENROUTER_API_KEY" -> "openrouter", "OPENAI_API_KEY" -> "openai"
+        provider = api_key_var.lower()
+        if provider.endswith('_api_key'):
+            provider = provider[:-8]  # Remove "_api_key" suffix
+        elif provider.endswith('api_key'):
+            provider = provider[:-7]  # Remove "api_key" suffix
+        
+        api_key = config.get_api_key(provider)
 
         if not api_key:
-            logger.warning(f"API key not found for {api_key_var}")
+            logger.warning(f"API key not found for {api_key_var} (extracted provider: '{provider}')")
+            logger.debug(f"Available API keys: openai={bool(config.openai_api_key)}, "
+                        f"anthropic={bool(config.anthropic_api_key)}, "
+                        f"google={bool(config.google_api_key)}, "
+                        f"openrouter={bool(config.openrouter_api_key)}")
             return None
+        
+        logger.debug(f"Creating client for {model_name} with provider '{provider}' (key length: {len(api_key)})")
 
         # Determine client type based on API URL or model name
         api_url_lower = api_url.lower()
@@ -63,6 +78,13 @@ class ClientFactory:
                 )
             elif 'googleapis.com' in api_url_lower or 'gemini' in model_name_lower:
                 return GoogleClient(
+                    api_url=api_url,
+                    api_key=api_key,
+                    model_name=model_name,
+                    **kwargs
+                )
+            elif 'openrouter.ai' in api_url_lower or 'openrouter' in model_name_lower:
+                return OpenRouterClient(
                     api_url=api_url,
                     api_key=api_key,
                     model_name=model_name,

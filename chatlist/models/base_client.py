@@ -114,7 +114,25 @@ class BaseAPIClient(ABC):
             status_code = error.response.status_code
             try:
                 error_detail = error.response.json()
-                error_msg = f"HTTP {status_code}: {error_detail}"
+                # Extract user-friendly error message
+                if isinstance(error_detail, dict):
+                    error_info = error_detail.get('error', {})
+                    if isinstance(error_info, dict):
+                        message = error_info.get('message', str(error_detail))
+                    else:
+                        message = str(error_info)
+                else:
+                    message = str(error_detail)
+                
+                # Special handling for common error codes
+                if status_code == 402:
+                    error_msg = f"Payment Required (402): {message}\n\nThis usually means insufficient credits. Visit https://openrouter.ai/settings/credits to add credits or reduce max_tokens."
+                elif status_code == 401:
+                    error_msg = f"Unauthorized (401): {message}\n\nPlease check your API key in .env file."
+                elif status_code == 404:
+                    error_msg = f"Not Found (404): {message}\n\nThe model may not be available or the name is incorrect."
+                else:
+                    error_msg = f"HTTP {status_code}: {message}"
             except Exception:
                 error_msg = f"HTTP {status_code}: {error.response.text[:200]}"
         elif isinstance(error, httpx.RequestError):
