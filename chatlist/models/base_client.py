@@ -168,7 +168,7 @@ class BaseAPIClient(ABC):
         headers: Optional[Dict[str, str]] = None
     ) -> httpx.Response:
         """
-        Make an HTTP request.
+        Make an HTTP request with automatic retry on rate limiting.
 
         Args:
             method: HTTP method (GET, POST, etc.)
@@ -179,15 +179,33 @@ class BaseAPIClient(ABC):
         Returns:
             HTTP response
         """
+        import asyncio
+        
         if headers is None:
             headers = self._get_headers()
 
-        response = await self.client.request(
-            method=method,
-            url=url,
-            json=json_data,
-            headers=headers
-        )
-        response.raise_for_status()
-        return response
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = await self.client.request(
+                    method=method,
+                    url=url,
+                    json=json_data,
+                    headers=headers
+                )
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 429 and attempt < max_retries - 1:
+                    # Rate limited - retry with exponential backoff
+                    backoff_time = 2 ** attempt
+                    logger.warning(f"Rate limited (429). Retrying in {backoff_time} seconds... (attempt {attempt + 1}/{max_retries})")
+                    await asyncio.sleep(backoff_time)
+                    continue
+                else:
+                    # Re-raise the error if not 429 or max retries reached
+                    raise
+            except Exception:
+                # Re-raise non-HTTP errors
+                raise
 

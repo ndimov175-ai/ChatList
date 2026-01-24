@@ -205,13 +205,19 @@ class OpenRouterClient(BaseAPIClient):
                                 model=self.model_name,
                                 raw_response=response_data
                             )
-                    except Exception as retry_error:
-                        logger.error(f"Rate limit retry {attempt + 1} failed: {retry_error}")
-                        if attempt == max_retries - 1:
-                            # Final attempt failed
+                    except httpx.HTTPStatusError as retry_http_error:
+                        if retry_http_error.response.status_code == 429:
+                            logger.warning(f"Rate limit retry {attempt + 1} still got 429, continuing...")
+                            continue
+                        else:
+                            # Different HTTP error, don't retry
+                            logger.error(f"Rate limit retry {attempt + 1} got different HTTP error: {retry_http_error.response.status_code}")
                             break
+                    except Exception as retry_error:
+                        logger.error(f"Rate limit retry {attempt + 1} failed with unexpected error: {retry_error}")
+                        break
                 
-                # All retries failed
+                # All retries failed or got non-429 error
                 logger.error(f"All rate limit retries failed for model {self.model_name}")
             
             # If retry failed or not a retryable error, handle normally
