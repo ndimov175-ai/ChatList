@@ -1,6 +1,7 @@
 """
 OpenRouter API client for accessing multiple AI models through a unified API.
 """
+import asyncio
 import logging
 import time
 import re
@@ -172,7 +173,48 @@ class OpenRouterClient(BaseAPIClient):
                 except Exception as retry_error:
                     logger.error(f"Retry failed: {retry_error}")
             
-            # If retry failed or not a 402 error, handle normally
+            # Handle 429 Rate Limiting - retry with exponential backoff
+            elif e.response.status_code == 429:
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        # Exponential backoff: 2^attempt seconds (1, 2, 4 seconds)
+                        backoff_time = 2 ** attempt
+                        logger.warning(f"Rate limited (429). Retrying in {backoff_time} seconds... (attempt {attempt + 1}/{max_retries})")
+                        await asyncio.sleep(backoff_time)
+                        
+                        response = await self._make_request(
+                            method="POST",
+                            url=self.api_url,
+                            json_data=payload
+                        )
+                        response_data = response.json()
+                        response_time = time.time() - start_time
+                        
+                        choices = response_data.get("choices", [])
+                        if choices:
+                            text = choices[0].get("message", {}).get("content", "")
+                            usage = response_data.get("usage", {})
+                            tokens_used = usage.get("total_tokens")
+                            
+                            logger.info(f"Rate limit retry successful after {backoff_time} seconds")
+                            return APIResponse(
+                                text=text,
+                                response_time=response_time,
+                                tokens_used=tokens_used,
+                                model=self.model_name,
+                                raw_response=response_data
+                            )
+                    except Exception as retry_error:
+                        logger.error(f"Rate limit retry {attempt + 1} failed: {retry_error}")
+                        if attempt == max_retries - 1:
+                            # Final attempt failed
+                            break
+                
+                # All retries failed
+                logger.error(f"All rate limit retries failed for model {self.model_name}")
+            
+            # If retry failed or not a retryable error, handle normally
             response_time = time.time() - start_time
             return self._handle_error(e, f"OpenRouter API ({self.model_name})")
         

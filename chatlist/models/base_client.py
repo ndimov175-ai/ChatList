@@ -131,6 +131,8 @@ class BaseAPIClient(ABC):
                     error_msg = f"Unauthorized (401): {message}\n\nPlease check your API key in .env file."
                 elif status_code == 404:
                     error_msg = f"Not Found (404): {message}\n\nThe model may not be available or the name is incorrect."
+                elif status_code == 429:
+                    error_msg = f"Rate Limited (429): {message}\n\nToo many requests. The API is rate limiting your requests. Please wait a moment and try again, or reduce the frequency of requests."
                 else:
                     error_msg = f"HTTP {status_code}: {message}"
             except Exception:
