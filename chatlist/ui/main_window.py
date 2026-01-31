@@ -90,6 +90,8 @@ class MainWindow(QMainWindow):
 
         # Create splitter for resizable panels
         splitter = QSplitter(Qt.Orientation.Horizontal)
+        # expose splitter for settings dialog to adjust panel sizes
+        self.splitter = splitter
         main_layout.addWidget(splitter)
 
         # Left panel: Prompt input and model selection
@@ -171,6 +173,14 @@ class MainWindow(QMainWindow):
 
         toolbar.addSeparator()
 
+        # Enhance prompt action
+        enhance_action = QAction("🎯 Enhance Prompt", self)
+        enhance_action.setShortcut("Ctrl+E")
+        enhance_action.triggered.connect(self.on_enhance_prompt)
+        toolbar.addAction(enhance_action)
+
+        toolbar.addSeparator()
+
         # Clear results action
         clear_action = QAction("Clear Results", self)
         clear_action.triggered.connect(self.results_table.clear_results)
@@ -214,13 +224,9 @@ class MainWindow(QMainWindow):
 
     def on_about(self):
         """Handle About action."""
-        QMessageBox.about(
-            self,
-            "About ChatList",
-            "ChatList - AI Model Comparison Tool\n\n"
-            "Version 0.1.0\n\n"
-            "Compare responses from multiple AI models simultaneously."
-        )
+        from chatlist.ui.about_dialog import AboutDialog
+        dialog = AboutDialog(self)
+        dialog.exec()
 
     def on_send_request_clicked(self):
         """Handle send request from toolbar."""
@@ -360,6 +366,20 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logger.error(f"Error saving result: {e}")
             QMessageBox.critical(self, "Error", f"Failed to save result: {e}")
+
+    def on_enhance_prompt(self):
+        """Handle enhance prompt action - open the enhancement dialog."""
+        from chatlist.ui.prompt_enhancer_dialog import PromptEnhancerDialog
+
+        current_prompt = self.prompt_input.get_prompt_text()
+        dialog = PromptEnhancerDialog(initial_prompt=current_prompt, parent=self)
+        dialog.prompt_selected.connect(self.on_enhanced_prompt_selected)
+        dialog.exec()
+
+    def on_enhanced_prompt_selected(self, enhanced_prompt: str):
+        """Handle selection of enhanced prompt from dialog."""
+        self.prompt_input.set_prompt_text(enhanced_prompt)
+        self.statusBar().showMessage("Enhanced prompt loaded")
 
     def closeEvent(self, event):
         """Handle window close event."""

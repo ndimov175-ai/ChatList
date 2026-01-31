@@ -40,11 +40,30 @@ REQUEST_TIMEOUT=30
 
 ## Usage
 
-Run the application:
+Run the application using any of these methods:
+
+**Method 1: Using the executable script (recommended)**
 ```bash
-python run.py
-# or
-python -m chatlist.app
+./run.py
+```
+
+**Method 2: Using the bash launcher**
+```bash
+./run.sh
+```
+
+**Method 3: Traditional Python**
+```bash
+source .venv/bin/activate
+python3 run.py
+```
+
+**Note for Headless Servers:**
+If running on a server without a graphical display (headless), the application uses offscreen rendering by default. This allows it to run without a physical display while still processing all functionality.
+
+To explicitly use offscreen mode:
+```bash
+QT_QPA_PLATFORM=offscreen ./run.py
 ```
 
 ## Application Structure

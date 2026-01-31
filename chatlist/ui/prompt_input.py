@@ -139,6 +139,10 @@ class PromptInputWidget(QWidget):
         """Get current prompt text."""
         return self.prompt_text.toPlainText()
 
+    def set_prompt_text(self, text: str):
+        """Set prompt text programmatically."""
+        self.prompt_text.setPlainText(text)
+
     def clear(self):
         """Clear prompt input."""
         self.prompt_text.clear()

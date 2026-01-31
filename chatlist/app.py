@@ -2,7 +2,14 @@
 Main application entry point for ChatList.
 """
 import sys
+import os
 import logging
+
+# Set Qt platform for headless servers BEFORE importing PyQt6
+# Only use offscreen if there's no DISPLAY environment variable
+if not os.environ.get('DISPLAY') and not os.environ.get('QT_QPA_PLATFORM'):
+    os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+
 from PyQt6.QtWidgets import QApplication
 
 from chatlist.config.settings import config
